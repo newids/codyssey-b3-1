@@ -1,0 +1,91 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadOnlyEC2VpcInSeoul",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:Describe*",
+        "ec2:GetConsoleOutput",
+        "ec2:GetConsoleScreenshot"
+      ],
+      "Resource": "*",
+      "Condition": { "StringEquals": { "aws:RequestedRegion": "ap-northeast-2" } }
+    },
+    {
+      "Sid": "NetworkBuildAndTeardown",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateVpc", "ec2:DeleteVpc", "ec2:ModifyVpcAttribute",
+        "ec2:CreateSubnet", "ec2:DeleteSubnet", "ec2:ModifySubnetAttribute",
+        "ec2:CreateInternetGateway", "ec2:DeleteInternetGateway",
+        "ec2:AttachInternetGateway", "ec2:DetachInternetGateway",
+        "ec2:CreateRouteTable", "ec2:DeleteRouteTable",
+        "ec2:CreateRoute", "ec2:DeleteRoute", "ec2:ReplaceRoute",
+        "ec2:AssociateRouteTable", "ec2:DisassociateRouteTable",
+        "ec2:CreateSecurityGroup", "ec2:DeleteSecurityGroup",
+        "ec2:AuthorizeSecurityGroupIngress", "ec2:RevokeSecurityGroupIngress",
+        "ec2:AuthorizeSecurityGroupEgress", "ec2:RevokeSecurityGroupEgress",
+        "ec2:ModifySecurityGroupRules",
+        "ec2:AllocateAddress", "ec2:ReleaseAddress",
+        "ec2:AssociateAddress", "ec2:DisassociateAddress",
+        "ec2:CreateTags", "ec2:DeleteTags"
+      ],
+      "Resource": "*",
+      "Condition": { "StringEquals": { "aws:RequestedRegion": "ap-northeast-2" } }
+    },
+    {
+      "Sid": "ComputeBuildAndTeardown",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances", "ec2:TerminateInstances",
+        "ec2:StartInstances", "ec2:StopInstances", "ec2:RebootInstances",
+        "ec2:ModifyInstanceAttribute", "ec2:ModifyInstanceMetadataOptions",
+        "ec2:CreateKeyPair", "ec2:ImportKeyPair", "ec2:DeleteKeyPair",
+        "ec2:CreateVolume", "ec2:DeleteVolume", "ec2:AttachVolume", "ec2:DetachVolume"
+      ],
+      "Resource": "*",
+      "Condition": { "StringEquals": { "aws:RequestedRegion": "ap-northeast-2" } }
+    },
+    {
+      "Sid": "DenyExpensiveOrOutOfScopeResources",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:CreateNatGateway",
+        "ec2:CreateVpnGateway", "ec2:CreateVpnConnection",
+        "ec2:CreateTransitGateway",
+        "elasticloadbalancing:*",
+        "rds:*",
+        "s3:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyNonFreeTierInstanceTypes",
+      "Effect": "Deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:ec2:*:*:instance/*",
+      "Condition": { "StringNotEquals": { "ec2:InstanceType": ["t2.micro", "t3.micro"] } }
+    },
+    {
+      "Sid": "LookupLatestAmiViaSsm",
+      "Effect": "Allow",
+      "Action": [ "ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath" ],
+      "Resource": [
+        "arn:aws:ssm:ap-northeast-2::parameter/aws/service/canonical/*",
+        "arn:aws:ssm:ap-northeast-2::parameter/aws/service/ami-amazon-linux-latest/*"
+      ]
+    },
+    {
+      "Sid": "SelfServiceIdentity",
+      "Effect": "Allow",
+      "Action": [
+        "sts:GetCallerIdentity",
+        "sts:DecodeAuthorizationMessage",
+        "iam:GetUser", "iam:ListAttachedUserPolicies", "iam:ListMFADevices",
+        "iam:ChangePassword", "iam:GetAccountPasswordPolicy"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

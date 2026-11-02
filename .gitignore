@@ -217,3 +217,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 .DS_Store
+
+# B3-1 mission: never commit private keys or infra state
+*.pem
+.b3-1-state.env*
+.serena/
