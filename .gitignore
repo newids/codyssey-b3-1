@@ -222,3 +222,4 @@ __marimo__/
 *.pem
 .b3-1-state.env*
 .serena/
+.archify/

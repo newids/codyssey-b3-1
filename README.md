@@ -9,7 +9,7 @@ AWS 서울 리전(ap-northeast-2)에 VPC → Public Subnet → Internet Gateway 
 
 | # | 결과물 | 경로 |
 |---|---|---|
-| 1 | 아키텍처 다이어그램 | [`docs/architecture.png`](docs/architecture.png) (해설: [`docs/architecture.md`](docs/architecture.md)) |
+| 1 | 아키텍처 다이어그램 | [`docs/architecture.png`](docs/architecture.png) (대화형: [`docs/architecture.html`](docs/architecture.html), 해설: [`docs/architecture.md`](docs/architecture.md)) |
 | 2 | 외부 접속 증빙 | 아래 §3 + [`docs/screenshots/`](docs/screenshots/) |
 | 3 | 트러블슈팅 보고서 | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
 | 4 | 리소스 정리 체크리스트 | [`docs/cleanup-checklist.md`](docs/cleanup-checklist.md) |

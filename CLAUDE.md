@@ -65,9 +65,8 @@ curl -i http://<퍼블릭IP>/health  # 방식 B, 200 + 고정 문구("OK")
 | `docs/guide/02-평가-대비-체크리스트.md` | 요구사항 ↔ 증빙 매핑. 제출 전 전 항목 확인 |
 | `docs/guide/03-보너스-https-docker.md` | 보너스 과제 절차 |
 | `docs/qa/문제와-답변.md` | 학습 목표 5개 기반 Q&A, 오개념, 시나리오 문제 |
-| `docs/architecture.png` / `.md` | 제출용 다이어그램(스크립트 생성) + 해설 |
+| `docs/architecture.png` / `.html` / `.archify.json` / `.md` | 제출용 다이어그램 PNG, Archify 대화형 HTML, 그 원본 JSON, 해설. 수정은 JSON → `/archify` finalize → SVG 캡처 순서 |
 | `docs/troubleshooting.md`, `docs/cleanup-checklist.md`, `README.md` | 제출 템플릿. `<...>` 자리를 실제 값으로 채워야 함 |
-| `scripts/make_architecture_diagram.py` | `python3 scripts/make_architecture_diagram.py` 로 PNG 재생성 (matplotlib) |
 | `scripts/user-data.sh` | EC2 user data: Nginx + `/health` 200 "OK" |
 | `scripts/create-infra.sh` / `destroy-infra.sh` | AWS CLI 로 전체 생성/역순 삭제. 상태는 `.b3-1-state.env`(gitignore) |
 | `scripts/verify.sh <IP>` | 외부 접속 검증, 결과를 `docs/screenshots/verify-*.txt` 로 저장 |

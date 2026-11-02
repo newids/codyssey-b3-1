@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Codyssey B3-1 · AWS 단일 Public Subnet 웹 서비스 (ap-northeast-2)",
+    "locale": "ko",
+    "output": ".archify/architecture-b3-1-20261102-164551/b3-1-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "인터넷 사용자 / 평가자",
+      "sublabel": "브라우저 · curl /health",
+      "icon": "person",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        140,
+        62
+      ]
+    },
+    {
+      "id": "igw",
+      "type": "cloud",
+      "label": "Internet Gateway",
+      "sublabel": "퍼블릭 ↔ 사설 IP 1:1",
+      "pos": [
+        290,
+        300
+      ],
+      "size": [
+        134,
+        62
+      ]
+    },
+    {
+      "id": "rt",
+      "type": "cloud",
+      "label": "Route Table (Public)",
+      "sublabel": "10.0.0.0/16 local · 0.0.0.0/0 igw",
+      "pos": [
+        540,
+        120
+      ],
+      "size": [
+        186,
+        62
+      ]
+    },
+    {
+      "id": "sg",
+      "type": "security",
+      "label": "Security Group",
+      "sublabel": "80 ← 0.0.0.0/0 · 22 ← 내 IP/32",
+      "pos": [
+        540,
+        300
+      ],
+      "size": [
+        160,
+        62
+      ]
+    },
+    {
+      "id": "ec2",
+      "type": "backend",
+      "label": "EC2 t2.micro · Nginx",
+      "sublabel": "Ubuntu 24.04 · / , /health → 200",
+      "pos": [
+        800,
+        300
+      ],
+      "size": [
+        168,
+        62
+      ]
+    },
+    {
+      "id": "ebs",
+      "type": "database",
+      "label": "EBS gp3 8 GiB",
+      "sublabel": "루트 볼륨 · 종료 시 삭제",
+      "pos": [
+        800,
+        470
+      ],
+      "size": [
+        168,
+        62
+      ]
+    },
+    {
+      "id": "iam",
+      "type": "security",
+      "label": "IAM User b3-1-operator",
+      "sublabel": "최소권한 · Admin 없음",
+      "icon": "person",
+      "pos": [
+        290,
+        600
+      ],
+      "size": [
+        160,
+        62
+      ]
+    },
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "학습자 (내 IP)",
+      "sublabel": "ssh -i key.pem · AWS CLI",
+      "icon": "person",
+      "pos": [
+        40,
+        600
+      ],
+      "size": [
+        122,
+        62
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "AWS ap-northeast-2 (서울) · 프리 티어",
+      "wraps": [
+        "igw",
+        "rt",
+        "sg",
+        "ec2",
+        "ebs",
+        "iam"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "security-group",
+      "label": "VPC 10.0.0.0/16",
+      "wraps": [
+        "igw",
+        "rt",
+        "sg",
+        "ec2",
+        "ebs"
+      ],
+      "pad": 18
+    },
+    {
+      "kind": "security-group",
+      "label": "Public Subnet 10.0.1.0/24 · 퍼블릭 IP 자동할당",
+      "wraps": [
+        "sg",
+        "ec2",
+        "ebs"
+      ],
+      "pad": 12
+    }
+  ],
+  "connections": [
+    {
+      "from": "user",
+      "to": "igw",
+      "label": "HTTP :80",
+      "variant": "emphasis"
+    },
+    {
+      "from": "igw",
+      "to": "sg",
+      "label": "TCP 80 허용",
+      "variant": "emphasis"
+    },
+    {
+      "from": "sg",
+      "to": "ec2",
+      "label": "Nginx :80",
+      "variant": "emphasis"
+    },
+    {
+      "from": "ec2",
+      "to": "ebs",
+      "label": "루트 볼륨",
+      "route": "straight"
+    },
+    {
+      "from": "ec2",
+      "to": "rt",
+      "label": "아웃바운드 apt · curl",
+      "variant": "dashed"
+    },
+    {
+      "from": "rt",
+      "to": "igw",
+      "label": "0.0.0.0/0 → igw",
+      "variant": "dashed"
+    },
+    {
+      "from": "operator",
+      "to": "sg",
+      "label": "SSH :22 · 내 IP/32 만",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "route": "orthogonal-v"
+    },
+    {
+      "from": "operator",
+      "to": "iam",
+      "label": "API 호출",
+      "variant": "security",
+      "route": "straight"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "요청 경로 (외부 → 서비스)",
+      "items": [
+        "인터넷 → IGW(퍼블릭→사설 IP) → Route Table 연결 서브넷 → SG 80 허용 → EC2 ENI → Nginx",
+        "응답은 SG 가 Stateful 이라 별도 규칙 없이 통과 → Route 0.0.0.0/0 → IGW → 사용자",
+        "검증: GET /health → 200 \"OK\" (방식 B) 또는 브라우저 / (방식 A)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "최소권한 · 최소노출",
+      "items": [
+        "SG 인바운드는 80(전체), 22(내 IP /32) 두 줄뿐 · 0.0.0.0/0 전체 포트 규칙 없음",
+        "IAM 사용자 1개, EC2/VPC/SG 작업만 허용 · AdministratorAccess 없음 · 루트 미사용",
+        "NAT/ELB/RDS/S3 는 정책에서 Deny · 인스턴스 타입 micro 로 제한"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "과금 요소와 정리 순서",
+      "items": [
+        "과금: EC2 실행시간, EBS 8 GiB, (할당 시) Elastic IP",
+        "정리: EC2 Terminate → EBS/EIP → IGW detach·delete → Subnet/Route Table → VPC",
+        "NAT Gateway 는 만들지 않음 (존재만으로 시간당 과금)"
+      ]
+    }
+  ]
+}

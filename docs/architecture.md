@@ -1,7 +1,8 @@
 # 아키텍처 설명 (docs/architecture.png 의 해설)
 
 > 제출 규격 파일은 `docs/architecture.png` 이며, 이 문서는 다이어그램의 각 요소와 트래픽 흐름을 글로 설명한다.
-> 재생성: `python3 scripts/make_architecture_diagram.py` (matplotlib 필요). 실제 퍼블릭 IP 등을 반영하려면 스크립트의 문자열을 바꾸고 다시 실행한다.
+> 원본은 `docs/architecture.archify.json` (Archify 아키텍처 스키마), 대화형 버전은 `docs/architecture.html` 이다.
+> 재생성: `/archify` 스킬로 `docs/architecture.archify.json` 을 finalize 한 뒤 다이어그램 SVG 를 PNG 로 캡처한다. 실제 값(퍼블릭 IP 등)을 반영하려면 JSON 의 label/sublabel 을 수정한다.
 
 ![architecture](architecture.png)
 
